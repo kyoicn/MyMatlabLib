@@ -8,22 +8,22 @@ if nargin <5
     stop = 0;
 end
 
-Size = size(T);                                     %  ¹Û²â¾ØÕó´óÐ¡
-m = Size(1);                                        %  ²âÁ¿
-hat_y = zeros(N, 1);                                 %  ´ýÖØ¹¹µÄÆ×Óò(±ä»»Óò)ÏòÁ¿                     
+Size = size(T);                                     %  ï¿½Û²ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡
+m = Size(1);                                        %  ï¿½ï¿½
+hat_y = zeros(N, 1);                                 %  ï¿½ï¿½ï¿½Ø¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ä»»ï¿½ï¿½)ï¿½ï¿½                     
 r_n = s;
 Aug_t = zeros(m, k);
 pos_array = zeros(k, 1);
 
 for times=1:k
     product=abs(T'*r_n);
-    [~, pos]=max(product);                       %  ×î´óÍ¶Ó°ÏµÊý¶ÔÓ¦µÄÎ»ÖÃ
+    [sproduct, pos]=max(product);                       %  ï¿½ï¿½ï¿½Í¶Ó°Ïµï¿½ï¿½ï¿½Ó¦ï¿½ï¿½Î»ï¿½ï¿½
     Aug_t(:, times) = T(:, pos);
     T(:, pos) = zeros(m, 1);
     part = Aug_t(:, 1 : times);
     aug_y = inv(part'*part)*part'*s;
-    r_n = s - part * aug_y;                            %  ²Ð²î
-    pos_array(times) = pos;                         %  ¼ÍÂ¼×î´óÍ¶Ó°ÏµÊýµÄÎ»ÖÃ
+    r_n = s - part * aug_y;                            %  ï¿½Ð²ï¿½
+    pos_array(times) = pos;                         %  ï¿½ï¿½Â¼ï¿½ï¿½ï¿½Í¶Ó°Ïµï¿½ï¿½ï¿½Î»ï¿½ï¿½
     
     if (stop < 0)
         continue;
@@ -37,4 +37,4 @@ if (times < k)
     pos_array = pos_array(1 : times);
 end
     
-hat_y(pos_array)=aug_y;                           %  ÖØ¹¹µÄÏòÁ¿
+hat_y(pos_array)=aug_y;                           %  ï¿½Ø¹ï¿½ï¿½ï¿½ï¿½ï¿½
