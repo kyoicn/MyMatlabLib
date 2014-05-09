@@ -9,8 +9,9 @@ param.L = sparsity;
 param.numIteration = 150;
 param.errorFlag = 0; % sparsity constraint
 param.preserveDCAtom = 0;
-param.InitializationMethod = 'GivenMatrix';
-param.initialDictionary = rand(size(data, 1), N);
+% param.InitializationMethod = 'GivenMatrix';
+% param.initialDictionary = rand(size(data, 1), N);
+param.InitializationMethod = 'DataElements';
 param.displayProgress = display;
 
 [d, o] = KSVD(data, param);
