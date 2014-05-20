@@ -6,7 +6,7 @@ if nargin < 4
 end
 param.K = N;
 param.L = sparsity;
-param.numIteration = 150;
+param.numIteration = 50;
 param.errorFlag = 0; % sparsity constraint
 param.preserveDCAtom = 0;
 % param.InitializationMethod = 'GivenMatrix';
