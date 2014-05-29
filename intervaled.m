@@ -34,6 +34,7 @@ gap = (ma - mi) / bin;
 re = zeros(bin, si(2));
 counter = zeros(1, bin);
 for i = 1 : si(1)
+    if (isnan(data(i,sortidx))) continue; end
     cbin = floor((data(i, sortidx) - mi)/gap) + 1;
     if (cbin == bin+1) cbin = bin; end
     re(cbin, :) = re(cbin, :) + data(i, :);
