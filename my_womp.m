@@ -17,11 +17,13 @@ end
 if (nargin < 5)
     w = ones(m, 1);
 end
+
 wm = diag(w);
 
 for times=1:k
-    product = abs(T'*r_n);
-%     product=dot(abs(T'*r_n), w);
+%     product = abs(T'*r_n);
+%     product = dot(abs(T'*r_n), w);
+    product = abs(T'*r_n*wm);
     [~, pos]=max(product);                       %  最大投影系数对应的位置
     Aug_t(:, times) = T(:, pos);
     T(:, pos) = zeros(m, 1);
