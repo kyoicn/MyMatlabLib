@@ -17,7 +17,7 @@ end
 if (strcmp(method, 'OMP') == 1)
     co = my_omp(s, a, q, k, 0);
 elseif (strcmp(method, 'WOMP') == 1)
-    co = my_womp(s, a, q, k, w, 0);
+    co = my_womp(s, samplex, a, k, w, 0);
 elseif (strcmp(method, 'BP') == 1)
     co = bp(s, a, q);
 end
