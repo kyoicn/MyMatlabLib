@@ -1,4 +1,4 @@
-function [bestre co] = my_csf(s, samplex, base, k, method, er)
+function [bestre co] = my_csf(s, samplex, base, k, method, er, w)
 % [bestre co] = my_csf(s, samplex, base, k, method, er)
 
 a = base(samplex, :);
@@ -9,9 +9,15 @@ m = length(samplex);
 q = si(2);
 co = zeros(n, 1);
 
+if (nargin < 7)
+    w = ones(size(n, 1));
+end
+
 %% Methods
 if (strcmp(method, 'OMP') == 1)
     co = my_omp(s, a, q, k, 0);
+elseif (strcmp(method, 'WOMP') == 1)
+    co = my_womp(s, a, q, k, w, 0);
 elseif (strcmp(method, 'BP') == 1)
     co = bp(s, a, q);
 end
