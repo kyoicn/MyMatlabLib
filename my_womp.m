@@ -2,7 +2,7 @@
 %
 % stop: stop condition
 
-function hat_y=my_womp(s, samplex, T, k, w, stop)
+function [hat_y, er] = my_womp(s, samplex, T, k, w, stop)
 
 si = size(T);                                     %  观测矩阵大小
 m = si(1);
@@ -50,3 +50,4 @@ if (times < k)
 end
     
 hat_y(pos_array)=aug_y;                           %  重构的向量
+er = r_n;
