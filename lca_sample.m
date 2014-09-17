@@ -1,4 +1,9 @@
 %% Local least cost sample
+% samples = lca_sample(m, cost, r, alps)
+% m: # of samples
+% cost: cost map;
+% r: radius for local group
+% alps: CA parameter
 
 function samples = lca_sample(m, cost, r, alps)
     dim = size(cost);

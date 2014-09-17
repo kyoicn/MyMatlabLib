@@ -1,4 +1,4 @@
-function [bestre co] = my_csf(s, samplex, base, k, method, er, w)
+function [bestre co] = my_csf(s, samplex, base, k, method, eps, er, w)
 % [bestre co] = my_csf(s, samplex, base, k, method, er)
 
 a = base(samplex, :);
@@ -9,17 +9,21 @@ m = length(samplex);
 q = si(2);
 co = zeros(n, 1);
 
-if (nargin < 7)
-    w = ones(size(n, 1));
-end
+if (nargin < 6) eps = 0; end
+if (nargin < 7) er = 0; end
+if (nargin < 8) w = ones(size(n, 1)); end
 
 %% Methods
-if (strcmp(method, 'OMP') == 1)
+if (strcmpi(method, 'omp'))
     co = my_omp(s, a, q, k, 0);
 elseif (strcmp(method, 'WOMP') == 1)
     co = my_womp(s, samplex, a, k, w, 0);
 elseif (strcmp(method, 'BP') == 1)
     co = bp(s, a, q);
+elseif (strcmp(method, 'L1') == 1)
+    co = l1qc_logbarrier(a'*inv(a*a')*s, a, [], s, eps);
+elseif (strcmpi(method, 'cosamp'))
+    co = CoSaMP(a, s, k);
 end
 
 % OMP with pre-processing

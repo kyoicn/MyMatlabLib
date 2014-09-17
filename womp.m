@@ -1,26 +1,43 @@
 %% Weighted OMP Recovery
-%  s-测量；T-观测矩阵；N-向量大小; k: Sparsity; d: Distribution
-function hat_y=womp(s,T,N,k,d)
+%
+% stop: stop condition
 
-Size=size(T);                                     %  观测矩阵大小
-M=Size(1);                                        %  测量
-hat_y=zeros(1,N);                                 %  待重构的谱域(变换域)向量                     
-Aug_t=[];                                         %  增量矩阵(初始值为空矩阵)
-r_n=s;                                            %  残差值
+function [hat_y, pos_array, err]=womp(s, T, N, k, w, stop)
 
-for times=1:k;                                    %  迭代次数(稀疏度是测量的1/4)
-    for col=1:N;                                  %  恢复矩阵的所有列向量
-        product(col)=d(col) * abs(T(:,col)'*r_n); %  恢复矩阵的列向量和残差的投影系数(内积值)
-    end
-    [val,pos]=max(product);                       %  最大投影系数对应的位置
-    Aug_t=[Aug_t,T(:,pos)];                       %  矩阵扩充
-    T(:,pos)=zeros(M,1);                          %  选中的列置零（实质上应该去掉，为了简单我把它置零）
-    aug_y=(Aug_t'*Aug_t)^(-1)*Aug_t'*s;           %  最小二乘,使残差最小
-    r_n=s-Aug_t*aug_y;                            %  残差
-    pos_array(times)=pos;                         %  纪录最大投影系数的位置
+Size = size(T);
+m = Size(1);
+if (nargin < 5) w = ones(m, 1); end
+if nargin <6 stop = 0; end
+wm = diag(w);
+hat_y = zeros(N, 1);                                 %  锟斤拷锟截癸拷锟斤拷锟斤拷锟斤拷(锟戒换锟斤拷)锟斤拷                     
+r_n = s;
+Aug_t = zeros(m, k);
+pos_array = zeros(k, 1);
+err = zeros(k, 1);
+
+for times=1:k
+    product=abs(T'*wm*r_n);
+    [sproduct, pos]=max(product);                       %  锟斤拷锟酵队跋碉拷锟斤拷应锟斤拷位锟斤拷
+    Aug_t(:, times) = T(:, pos);
+    T(:, pos) = zeros(m, 1);
+    part = Aug_t(:, 1 : times);
+    aug_y = inv(part'*part)*part'*s;
+    r_n = s - part * aug_y;                            %  锟叫诧拷
+    pos_array(times) = pos;                         %  锟斤拷录锟斤拷锟酵队跋碉拷锟斤拷位锟斤拷
+    err(times) = norm(r_n);
     
-    if (norm(r_n)<0.1)                              %  残差足够小
+    if (stop < 0)
+        continue;
+    elseif (norm(r_n) <= stop)
         break;
     end
 end
-hat_y(pos_array)=aug_y;                           %  重构的向量
+
+if (times < k)
+    % remove zeros
+    pos_array = pos_array(1 : times);
+    err = err(1:times);
+end
+    
+hat_y(pos_array)=aug_y;                           %  锟截癸拷锟斤拷锟斤拷
+

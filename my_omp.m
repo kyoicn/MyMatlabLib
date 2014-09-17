@@ -2,7 +2,7 @@
 %
 % stop: stop condition
 
-function [hat_y, pos_array]=my_omp(s, T, N, k, stop)
+function [hat_y, pos_array, err]=my_omp(s, T, N, k, stop)
 
 if nargin <5
     stop = 0;
@@ -14,6 +14,7 @@ hat_y = zeros(N, 1);                                 %  ���ع�����
 r_n = s;
 Aug_t = zeros(m, k);
 pos_array = zeros(k, 1);
+err = zeros(k, 1);
 
 for times=1:k
     product=abs(T'*r_n);
@@ -24,6 +25,7 @@ for times=1:k
     aug_y = inv(part'*part)*part'*s;
     r_n = s - part * aug_y;                            %  �в�
     pos_array(times) = pos;                         %  ��¼���ͶӰϵ���λ��
+    err(times) = norm(r_n);
     
     if (stop < 0)
         continue;
@@ -35,6 +37,7 @@ end
 if (times < k)
     % remove zeros
     pos_array = pos_array(1 : times);
+    err = err(1:times);
 end
     
 hat_y(pos_array)=aug_y;                           %  �ع�����

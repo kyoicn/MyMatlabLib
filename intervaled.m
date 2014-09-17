@@ -1,9 +1,12 @@
-function re = intervaled(data, bin, sortidx)
+function [re err] = intervaled(data, bin, sortidx)
 % group data into equally intervaled bins
 % re = intervaled(data, bin, sortidx)
 % data: input matrix
 % bin: # of bins (>0)
 % sortidx: index of reference column for sorting (default=1)
+%
+% re: 
+% err:
 
 if (bin <= 0 || rem(bin, 1) ~= 0)
     error('invalid # of bins');
@@ -32,15 +35,23 @@ end
 gap = (ma - mi) / bin;
 
 re = zeros(bin, si(2));
+err = zeros(bin, si(2)); % error info: standard deviation
+sqsu = zeros(bin, si(2));
+su = zeros(bin, si(2));
 counter = zeros(1, bin);
 for i = 1 : si(1)
     if (isnan(data(i,sortidx))) continue; end
     cbin = floor((data(i, sortidx) - mi)/gap) + 1;
     if (cbin == bin+1) cbin = bin; end
     re(cbin, :) = re(cbin, :) + data(i, :);
+    sqsu(cbin, :) = sqsu(cbin, :) + data(i, :).^2;
+    su(cbin, :) = su(cbin, :) + data(i, :);
     counter(cbin) = counter(cbin) + 1;
 end
 for i = 1 : bin
     if (counter(i) == 0) re(i, :) = nan;
-    else re(i, :) = re(i, :) / counter(i); end
+    else
+        re(i, :) = re(i, :) / counter(i); 
+        err(i, :) = sqrt((sqsu(i,:) / counter(i) - (su(i,:) / counter(i)).^2));
+    end
 end

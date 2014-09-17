@@ -6,7 +6,7 @@
 % id: identity column index
 % rk:
 
-function [samples, bestnorm, samples_sequence] = minnorm_sample_cost_ref(m, b, id, cost, ref, seed, random, debug)
+function [samples, bestnorm, samples_sequence, costs] = minnorm_sample_cost_ref(m, b, id, cost, ref, seed, random, debug)
     % so far only deal with 2D
     if (nargin < 6) seed = 0; random = 0; debug = 0;
     elseif (nargin < 7) random = 0; debug = 0;
@@ -18,7 +18,12 @@ function [samples, bestnorm, samples_sequence] = minnorm_sample_cost_ref(m, b, i
     acost = 0;
     cols = 1:n;
     cols(id) = [];
-    if (debug) normf = figure; end
+    if (debug) 
+        costf = figure;
+        plot(cost);
+        xlim([0 n+1]);
+        normf = figure; 
+    end
     if (n == 0) samples = []; bestnorm = 0; samples_sequence = [];
     elseif (n < m) samples = 1:n; bestnorm = mcs(b(:,cols)); samples_sequence = ones(n,1);
     else
@@ -26,6 +31,7 @@ function [samples, bestnorm, samples_sequence] = minnorm_sample_cost_ref(m, b, i
         flag = zeros(n, 1);
         samples_sequence = zeros(n, m);
         bestnorm = zeros(m, 1);
+        costs = zeros(m, 1);
         for sam = 1 : m
             if (sam == 1)
                 if (seed == 0 && random ~= 0) seed = randi(n);
@@ -36,6 +42,7 @@ function [samples, bestnorm, samples_sequence] = minnorm_sample_cost_ref(m, b, i
                 flag(seed) = 1;
                 samples_sequence(:,sam) = flag;
                 bestnorm(sam) = 1;
+                costs(sam) = c;
                 if (debug) fprintf('(%d,B=%.2f):seed %d, norm=%.2f, cost=%.1f%%(%.1f%%)\n',...
                         m, ref(sam), seed, bestnorm(sam), acost/sumcost*100, (acost/sumcost-sam/n)*100); end
                 continue;
@@ -60,6 +67,10 @@ function [samples, bestnorm, samples_sequence] = minnorm_sample_cost_ref(m, b, i
                 plot(1:n, ref(sam)*ones(1, n), 'r', 'LineWidth', 2);
                 xlim([0 n+1]);
                 ylim([min(norms)-1e-10 max(norms)+1e-10]);
+                
+                figure(costf);
+                hold on
+                plot(samples(sam-1), cost(samples(sam-1)), 'ro', 'MarkerSize', 5);
             end
             %normmap = antihc(allnorm);
             
@@ -72,10 +83,14 @@ function [samples, bestnorm, samples_sequence] = minnorm_sample_cost_ref(m, b, i
                 picked = choose;
                 c = cost(idx(choose));
             else
+%                 prob = cost(idx(pos)).^(-1)/sum(cost(idx(pos)).^(-1));
+%                 choose = randsample(length(pos), 1, true, prob);
+%                 c = cost(idx(pos(choose)));
                 [c, choose] = min(cost(idx(pos)));
                 picked = pos(choose);
             end
             bestnorm(sam) = norms(picked);
+            costs(sam) = costs(sam-1) + c;
             samples(sam) = idx(picked);
             acost = acost + c;
             flag(idx(picked)) = 1;

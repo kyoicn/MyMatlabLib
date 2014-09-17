@@ -1,10 +1,12 @@
-function s = sparsev(n, k)
+function s = sparsev(n, k, r)
+if (nargin < 3) r = 1; end
+
 if (k >= n) 
-    s = 100 * rand(n, 1);
+    s = r * rand(n, 1);
 elseif (k <= 0)
     s = zeors(n, 1);
 else
     s = zeros(n, 1);
     randp = randperm(n);
-    s(randp(1 : k)) = 100 * rand(k, 1);
+    s(randp(1 : k)) = r * rand(k, 1);
 end
