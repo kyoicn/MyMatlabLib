@@ -5,7 +5,7 @@
 % r: radius for local group
 % alps: CA parameter
 
-function samples = lca_sample(m, cost, r, alps)
+function [samples, realm] = lca_sample(m, cost, r, alps)
     dim = size(cost);
 %     ndim = length(dim);
     n = prod(dim);
@@ -20,10 +20,13 @@ function samples = lca_sample(m, cost, r, alps)
     if (nargin < 3) r = max(1, sqrt(n/m)/2); end % adaptive radius
     samples = zeros(dim);
     bak_cost = cost;
-    seeds = sort(randperm(n, m));
+    seeds = sort(find(binornd(1, m/n, n, 1) == 1))';
+%     seeds = sort(randperm(n, m))
+    m = length(seeds);
+
     % so far only for 2d
-    coy = ceil(seeds./dim(1));
-    cox = seeds - (coy-1)*dim(1);
+    coy = floor((seeds-1)./dim(1)) + 1;
+    cox = mod((seeds-1), dim(1)) + 1;
     for seedi = 1 : m
         sx = cox(seedi);
         sy = coy(seedi);
@@ -42,6 +45,7 @@ function samples = lca_sample(m, cost, r, alps)
         prob = pcost(idx).^(-alps(sx,sy))/sum(pcost(idx).^(-alps(sx,sy)));
         inf_indicator = pcost(idx);
         prob(isinf(inf_indicator(:))) = 0;
+        if (sum(prob) == 0) continue; end % all sampled
         offset = randsamplewtr(length(idx), 1, prob);
         yy = ceil(offset/size(pcost, 1));
         xx = offset - (yy-1) * size(pcost, 1);
@@ -50,4 +54,5 @@ function samples = lca_sample(m, cost, r, alps)
         samples(xx,yy) = 1;
         bak_cost(xx, yy) = inf;
     end
+    realm = sum(samples(:));
 end

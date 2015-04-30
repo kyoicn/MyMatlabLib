@@ -1,5 +1,7 @@
 % Sparsity level of a vector,
 % or energy concentrated on the major coefficients
+% [sc, in] = sparsec(v, alp)
+% 
 
 function [sc, in] = sparsec(v, alp)
     if nargin < 2
